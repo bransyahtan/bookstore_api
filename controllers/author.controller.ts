@@ -159,8 +159,16 @@ router.patch(
  *         schema:
  *           type: integer
  *     responses:
- *       204:
+ *       200:
  *         description: Author deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Author deleted successfully
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  *       403:
@@ -177,7 +185,7 @@ router.delete(
       return res
         .status(404)
         .json({ error: { code: "NOT_FOUND", message: "Author not found" } });
-    res.status(204).send();
+    res.status(200).json({ message: "Author deleted successfully" });
   },
 );
 
