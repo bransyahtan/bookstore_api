@@ -26,7 +26,7 @@ const options: swaggerJsdoc.Options = {
         User: {
           type: "object",
           properties: {
-            id: { type: "integer" },
+            id: { type: "integer", readOnly: true },
             email: { type: "string" },
             fullName: { type: "string" },
             role: { type: "string", enum: ["admin", "customer"] },
@@ -52,7 +52,7 @@ const options: swaggerJsdoc.Options = {
         Book: {
           type: "object",
           properties: {
-            id: { type: "integer" },
+            id: { type: "integer", readOnly: true },
             title: { type: "string" },
             authorId: { type: "integer" },
             price: { type: "number" },
@@ -62,7 +62,7 @@ const options: swaggerJsdoc.Options = {
         Author: {
           type: "object",
           properties: {
-            id: { type: "integer" },
+            id: { type: "integer", readOnly: true },
             name: { type: "string" },
             bio: { type: "string" },
           },

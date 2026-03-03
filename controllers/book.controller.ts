@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { authMiddleware, roleMiddleware, validate } from "../middlewares";
-import { BooksService } from "../services";
+import { AuthorsService, BooksService } from "../services";
 import { bookSchema, updateBookSchema } from "../validations/book.schema";
 
 const router = Router();
@@ -111,6 +111,12 @@ router.post(
   roleMiddleware("admin"),
   validate(bookSchema),
   async (req: Request, res: Response) => {
+    const author = await AuthorsService.getById(req.body.authorId);
+    if (!author) {
+      return res.status(404).json({
+        error: { code: "NOT_FOUND", message: "Author not found" },
+      });
+    }
     const book = await BooksService.create(req.body);
     res.status(201).json(book);
   },
@@ -156,6 +162,14 @@ router.patch(
   roleMiddleware("admin"),
   validate(updateBookSchema),
   async (req: Request, res: Response) => {
+    if (req.body.authorId) {
+      const author = await AuthorsService.getById(req.body.authorId);
+      if (!author) {
+        return res.status(404).json({
+          error: { code: "NOT_FOUND", message: "Author not found" },
+        });
+      }
+    }
     const book = await BooksService.update(Number(req.params.id), req.body);
     if (!book)
       return res
@@ -180,8 +194,16 @@ router.patch(
  *         schema:
  *           type: integer
  *     responses:
- *       204:
+ *       200:
  *         description: Book deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Book deleted successfully
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  *       403:
@@ -198,7 +220,7 @@ router.delete(
       return res
         .status(404)
         .json({ error: { code: "NOT_FOUND", message: "Book not found" } });
-    res.status(204).send();
+    res.status(200).json({ message: "Book deleted successfully" });
   },
 );
 
